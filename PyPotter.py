@@ -17,20 +17,21 @@ from os.path import isfile, join, isdir
 import time
 import datetime
 import threading
+import picamera
 from threading import Thread
 from statistics import mean 
 from CountsPerSec import CountsPerSec
-from HassApi import HassApi
+#from HassApi import HassApi
 
 # Check for required number of arguments
-if (len(sys.argv) < 4):
-    print("Incorrect number of arguments. Required Arguments: [video source url] [home assistant URL] [API token]")
-    sys.exit(0)
+##if (len(sys.argv) < 4):
+#    print("Incorrect number of arguments. Required Arguments: [video source url] [home assistant URL] [API token]")
+#    sys.exit(0)
 
 # Parse Required Arguments
-videoSource = sys.argv[1]
-hassUrl = sys.argv[2]
-hassRestToken = sys.argv[3]
+#videoSource = sys.argv[1]
+#hassUrl = sys.argv[2]
+#hassRestToken = sys.argv[3]
 
 # Parse Optional Arguments
 IsRemoveBackground = True
@@ -51,7 +52,7 @@ if (len(sys.argv) >= 8):
     IsDebugFps = sys.argv[7] == "True"
 
 # Initialize Home Assistant Rest API Wrapper
-hass = HassApi(hassUrl, hassRestToken)
+#hass = HassApi(hassUrl, hassRestToken)
 
 # Constants
 DesiredFps = 42
@@ -70,8 +71,8 @@ NumDistancesToAverage = int(round( 20 * (DesiredFps / DefaultFps)))
 IsShowOriginal = False
 IsShowBackgroundRemoved = False
 IsShowThreshold = False
-IsShowOutput = False
-
+IsShowOutput = True
+IsShowOutputWindows=False
 if IsShowOutputWindows:
     IsShowOriginal = True
     IsShowBackgroundRemoved = True
@@ -195,19 +196,20 @@ def PerformSpell(spell):
     Make the desired Home Assistant REST API call based on the spell
     """
     if (spell=="incendio"):
-        hass.TriggerAutomation("automation.wand_incendio")
+        print("incendio")
+        #hass.TriggerAutomation("automation.wand_incendio")
     elif (spell=="aguamenti"):
-        hass.TriggerAutomation("automation.wand_aguamenti")
+         print("qguamenti")       #hass.TriggerAutomation("automation.wand_aguamenti")
     elif (spell=="alohomora"):
-        hass.TriggerAutomation("automation.wand_alohomora")
+         print("alohomora")       #hass.TriggerAutomation("automation.wand_alohomora")
     elif (spell=="silencio"):
-        hass.TriggerAutomation("automation.wand_silencio")
+         print("silencio")       #hass.TriggerAutomation("automation.wand_silencio")
     elif (spell=="specialis_revelio"):
-        hass.TriggerAutomation("automation.wand_specialis_revelio")
+        print("specialic revelio")        #hass.TriggerAutomation("automation.wand_specialis_revelio")
     elif (spell=="revelio"):
-        hass.TriggerAutomation("automation.wand_revelio")
+        print("revelio")        #hass.TriggerAutomation("automation.wand_revelio")
     elif (spell == "tarantallegra"):
-        hass.TriggerAutomation("automation.wand_tarantallegra")
+        print("tarantallegra")        #hass.TriggerAutomation("automation.wand_tarantallegra")
 
 def CheckForPattern(wandTracks, exampleFrame):
     """
@@ -235,7 +237,7 @@ def CheckForPattern(wandTracks, exampleFrame):
         distance = math.sqrt((x1 - x2)**2 + (y1 - y2)**2)
         distances.append(distance)
 
-        cv2.line(wand_path_frame, (x1, y1),(x2, y2), (255,255,255), thickness)
+        cv2.line(wand_path_frame, (int(x1), int(y1)),(int(x2), int(y2)), (255,255,255), thickness)
         prevTrack = track
 
     mostRecentDistances = distances[-NumDistancesToAverage:]
@@ -245,6 +247,7 @@ def CheckForPattern(wandTracks, exampleFrame):
     contours, hierarchy = cv2.findContours(wand_path_frame,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
 
     # Determine if wand stopped moving by looking at recent movement (avgMostRecentDistances), and check the length of distances to make sure the spell is reasonably long
+    #print("len distances", len(distances),avgMostRecentDistances,SpellEndMovement, MinSpellLength)
     if (avgMostRecentDistances < SpellEndMovement and len(distances) > MinSpellLength):
         # Make sure wand path is valid and is over the defined minimum distance
         if (len(contours) > 0) and sumDistances > MinSpellDistance:
@@ -415,8 +418,12 @@ ProcessDataThread.daemon = True
 ProcessDataThread.start()
 
 # Set OpenCV video capture source
-videoCapture = cv2.VideoCapture(videoSource)
+#videoCapture = cv2.VideoCapture(videoSource)
+# Use below for picamera
 
+videoCapture = cv2.VideoCapture(0)
+videoCapture.set(3, 320)
+videoCapture.set(4, 240)
 # Main Loop
 while True:
     # Get most recent frame
@@ -450,7 +457,7 @@ while True:
         videoCapture = cv2.VideoCapture(videoSource)
 
     # Check for ESC key, if pressed shut everything down
-    if (cv2.waitKey(1) is 27):
+    if (cv2.waitKey(1) == 27):
         break
 
 # Shutdown PyPotter
