@@ -23,6 +23,7 @@ from statistics import mean
 from CountsPerSec import CountsPerSec
 #from HassApi import HassApi
 
+##Turn off arguments while debugging
 # Check for required number of arguments
 ##if (len(sys.argv) < 4):
 #    print("Incorrect number of arguments. Required Arguments: [video source url] [home assistant URL] [API token]")
@@ -55,7 +56,8 @@ if (len(sys.argv) >= 8):
 #hass = HassApi(hassUrl, hassRestToken)
 
 # Constants
-DesiredFps = 42
+#Changed DesiredFPS to reflect actual FPS 
+DesiredFps = 25
 DefaultFps = 42 # Original constants trained for 42 FPS
 MicroSecondsBetweenFrames = (1 / DesiredFps) * 1000000
 
@@ -68,11 +70,12 @@ MinSpellDistance = 100
 NumDistancesToAverage = int(round( 20 * (DesiredFps / DefaultFps)))
 
 # Booleans to turn on or off output windows
-IsShowOriginal = False
+###Turning on certain windows for debugging 
+IsShowOriginal = True
 IsShowBackgroundRemoved = False
 IsShowThreshold = False
 IsShowOutput = True
-IsShowOutputWindows=False
+IsShowOutputWindows=False   #Temporarily set to false for debugging
 if IsShowOutputWindows:
     IsShowOriginal = True
     IsShowBackgroundRemoved = True
@@ -192,6 +195,7 @@ def ClassifyImage(img):
         return "error"
 
 def PerformSpell(spell):
+    ##TODO: put in actual spell actuations after debugging
     """
     Make the desired Home Assistant REST API call based on the spell
     """
@@ -422,8 +426,8 @@ ProcessDataThread.start()
 # Use below for picamera
 
 videoCapture = cv2.VideoCapture(0)
-videoCapture.set(3, 320)
-videoCapture.set(4, 240)
+#videoCapture.set(3, 320)
+#videoCapture.set(4, 240)
 # Main Loop
 while True:
     # Get most recent frame
