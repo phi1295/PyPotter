@@ -25,12 +25,12 @@ from CountsPerSec import CountsPerSec
 
 ##Turn off arguments while debugging
 # Check for required number of arguments
-##if (len(sys.argv) < 4):
-#    print("Incorrect number of arguments. Required Arguments: [video source url] [home assistant URL] [API token]")
-#    sys.exit(0)
+if (len(sys.argv) < 4):
+    print("Incorrect number of arguments. Required Arguments: [video source url] [home assistant URL] [API token]")
+    sys.exit(0)
 
 # Parse Required Arguments
-#videoSource = sys.argv[1]
+videoSource = sys.argv[1]
 #hassUrl = sys.argv[2]
 #hassRestToken = sys.argv[3]
 
@@ -71,7 +71,7 @@ NumDistancesToAverage = int(round( 20 * (DesiredFps / DefaultFps)))
 
 # Booleans to turn on or off output windows
 ###Turning on certain windows for debugging 
-IsShowOriginal = True
+IsShowOriginal = False
 IsShowBackgroundRemoved = False
 IsShowThreshold = False
 IsShowOutput = True
@@ -422,10 +422,10 @@ ProcessDataThread.daemon = True
 ProcessDataThread.start()
 
 # Set OpenCV video capture source
-#videoCapture = cv2.VideoCapture(videoSource)
-# Use below for picamera
+videoCapture = cv2.VideoCapture(videoSource)
 
-videoCapture = cv2.VideoCapture(0)
+# Use below for picamera
+#videoCapture = cv2.VideoCapture(0)
 #videoCapture.set(3, 320)
 #videoCapture.set(4, 240)
 # Main Loop
