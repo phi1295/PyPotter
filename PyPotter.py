@@ -272,7 +272,7 @@ def CheckForPattern(wandTracks, exampleFrame):
     if wand_path_frame is not None:
         if (IsShowOutput):
             wandPathFrameWithText = AddIterationsPerSecText(wand_path_frame, outputCps.countsPerSec())
-            cv2.putText(wandPathFrameWithText, "Last Spell: " + LastSpell, (10, 400), cv2.FONT_HERSHEY_SIMPLEX, 1.0, (255, 255, 255))
+            cv2.putText(wandPathFrameWithText, "Last Spell: " + LastSpell, (10, 200), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255))
             cv2.imshow("Output", wandPathFrameWithText)
 
     return wandTracks
@@ -391,7 +391,7 @@ def AddIterationsPerSecText(frame, iterations_per_sec):
     Add iterations per second text to lower-left corner of a frame.
     """
     cv2.putText(frame, "{:.0f} iterations/sec".format(iterations_per_sec),
-        (10, 450), cv2.FONT_HERSHEY_SIMPLEX, 1.0, (255, 255, 255))
+        (10, 220), cv2.FONT_HERSHEY_SIMPLEX, 1.0, (255, 255, 255))
     return frame
 
 timeLastPrintedFps = datetime.datetime.now()
